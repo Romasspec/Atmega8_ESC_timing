@@ -1,0 +1,258 @@
+
+main.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         0000012a  00000000  00000000  00000094  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000002  00800060  0000012a  000001be  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000008  00800062  00800062  000001c0  2**0
+                  ALLOC
+  3 .debug_aranges 00000020  00000000  00000000  000001c0  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  4 .debug_pubnames 00000073  00000000  00000000  000001e0  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   0000015e  00000000  00000000  00000253  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 000000b4  00000000  00000000  000003b1  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   0000015c  00000000  00000000  00000465  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000050  00000000  00000000  000005c4  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    000000bc  00000000  00000000  00000614  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	12 c0       	rjmp	.+36     	; 0x26 <__ctors_end>
+   2:	2c c0       	rjmp	.+88     	; 0x5c <__bad_interrupt>
+   4:	2b c0       	rjmp	.+86     	; 0x5c <__bad_interrupt>
+   6:	2a c0       	rjmp	.+84     	; 0x5c <__bad_interrupt>
+   8:	2a c0       	rjmp	.+84     	; 0x5e <__vector_4>
+   a:	28 c0       	rjmp	.+80     	; 0x5c <__bad_interrupt>
+   c:	27 c0       	rjmp	.+78     	; 0x5c <__bad_interrupt>
+   e:	26 c0       	rjmp	.+76     	; 0x5c <__bad_interrupt>
+  10:	25 c0       	rjmp	.+74     	; 0x5c <__bad_interrupt>
+  12:	24 c0       	rjmp	.+72     	; 0x5c <__bad_interrupt>
+  14:	23 c0       	rjmp	.+70     	; 0x5c <__bad_interrupt>
+  16:	22 c0       	rjmp	.+68     	; 0x5c <__bad_interrupt>
+  18:	21 c0       	rjmp	.+66     	; 0x5c <__bad_interrupt>
+  1a:	20 c0       	rjmp	.+64     	; 0x5c <__bad_interrupt>
+  1c:	1f c0       	rjmp	.+62     	; 0x5c <__bad_interrupt>
+  1e:	1e c0       	rjmp	.+60     	; 0x5c <__bad_interrupt>
+  20:	1d c0       	rjmp	.+58     	; 0x5c <__bad_interrupt>
+  22:	1c c0       	rjmp	.+56     	; 0x5c <__bad_interrupt>
+  24:	1b c0       	rjmp	.+54     	; 0x5c <__bad_interrupt>
+
+00000026 <__ctors_end>:
+  26:	11 24       	eor	r1, r1
+  28:	1f be       	out	0x3f, r1	; 63
+  2a:	cf e5       	ldi	r28, 0x5F	; 95
+  2c:	d4 e0       	ldi	r29, 0x04	; 4
+  2e:	de bf       	out	0x3e, r29	; 62
+  30:	cd bf       	out	0x3d, r28	; 61
+
+00000032 <__do_copy_data>:
+  32:	10 e0       	ldi	r17, 0x00	; 0
+  34:	a0 e6       	ldi	r26, 0x60	; 96
+  36:	b0 e0       	ldi	r27, 0x00	; 0
+  38:	ea e2       	ldi	r30, 0x2A	; 42
+  3a:	f1 e0       	ldi	r31, 0x01	; 1
+  3c:	02 c0       	rjmp	.+4      	; 0x42 <.do_copy_data_start>
+
+0000003e <.do_copy_data_loop>:
+  3e:	05 90       	lpm	r0, Z+
+  40:	0d 92       	st	X+, r0
+
+00000042 <.do_copy_data_start>:
+  42:	a2 36       	cpi	r26, 0x62	; 98
+  44:	b1 07       	cpc	r27, r17
+  46:	d9 f7       	brne	.-10     	; 0x3e <.do_copy_data_loop>
+
+00000048 <__do_clear_bss>:
+  48:	10 e0       	ldi	r17, 0x00	; 0
+  4a:	a2 e6       	ldi	r26, 0x62	; 98
+  4c:	b0 e0       	ldi	r27, 0x00	; 0
+  4e:	01 c0       	rjmp	.+2      	; 0x52 <.do_clear_bss_start>
+
+00000050 <.do_clear_bss_loop>:
+  50:	1d 92       	st	X+, r1
+
+00000052 <.do_clear_bss_start>:
+  52:	aa 36       	cpi	r26, 0x6A	; 106
+  54:	b1 07       	cpc	r27, r17
+  56:	e1 f7       	brne	.-8      	; 0x50 <.do_clear_bss_loop>
+  58:	39 d0       	rcall	.+114    	; 0xcc <main>
+  5a:	65 c0       	rjmp	.+202    	; 0x126 <_exit>
+
+0000005c <__bad_interrupt>:
+  5c:	d1 cf       	rjmp	.-94     	; 0x0 <__vectors>
+
+0000005e <__vector_4>:
+	}
+	
+}*/
+
+ISR (TIMER2_OVF_vect)
+{
+  5e:	1f 92       	push	r1
+  60:	0f 92       	push	r0
+  62:	0f b6       	in	r0, 0x3f	; 63
+  64:	0f 92       	push	r0
+  66:	11 24       	eor	r1, r1
+  68:	2f 93       	push	r18
+  6a:	3f 93       	push	r19
+  6c:	4f 93       	push	r20
+  6e:	5f 93       	push	r21
+  70:	6f 93       	push	r22
+  72:	7f 93       	push	r23
+  74:	8f 93       	push	r24
+  76:	9f 93       	push	r25
+  78:	af 93       	push	r26
+  7a:	bf 93       	push	r27
+  7c:	ef 93       	push	r30
+  7e:	ff 93       	push	r31
+//	}
+
+//	PORT_HFet ^= (1<<AH_Fet);
+
+
+	(*pwm_com)();
+  80:	e0 91 68 00 	lds	r30, 0x0068
+  84:	f0 91 69 00 	lds	r31, 0x0069
+  88:	09 95       	icall
+}
+  8a:	ff 91       	pop	r31
+  8c:	ef 91       	pop	r30
+  8e:	bf 91       	pop	r27
+  90:	af 91       	pop	r26
+  92:	9f 91       	pop	r25
+  94:	8f 91       	pop	r24
+  96:	7f 91       	pop	r23
+  98:	6f 91       	pop	r22
+  9a:	5f 91       	pop	r21
+  9c:	4f 91       	pop	r20
+  9e:	3f 91       	pop	r19
+  a0:	2f 91       	pop	r18
+  a2:	0f 90       	pop	r0
+  a4:	0f be       	out	0x3f, r0	; 63
+  a6:	0f 90       	pop	r0
+  a8:	1f 90       	pop	r1
+  aa:	18 95       	reti
+
+000000ac <pwm_on>:
+
+void pwm_on (void)
+{
+	AH_OFF;
+  ac:	c3 98       	cbi	0x18, 3	; 24
+	pwm_com = &pwm_off;
+  ae:	8e e5       	ldi	r24, 0x5E	; 94
+  b0:	90 e0       	ldi	r25, 0x00	; 0
+  b2:	90 93 69 00 	sts	0x0069, r25
+  b6:	80 93 68 00 	sts	0x0068, r24
+}
+  ba:	08 95       	ret
+
+000000bc <pwm_off>:
+
+void pwm_off (void)
+{
+	AH_ON;
+  bc:	c3 9a       	sbi	0x18, 3	; 24
+	pwm_com = &pwm_on;
+  be:	86 e5       	ldi	r24, 0x56	; 86
+  c0:	90 e0       	ldi	r25, 0x00	; 0
+  c2:	90 93 69 00 	sts	0x0069, r25
+  c6:	80 93 68 00 	sts	0x0068, r24
+}
+  ca:	08 95       	ret
+
+000000cc <main>:
+
+
+int main (void)
+
+{
+	DDRB		 = (1<<AH_Fet)|(1<<BH_Fet)|(1<<CH_Fet);	
+  cc:	8e e0       	ldi	r24, 0x0E	; 14
+  ce:	87 bb       	out	0x17, r24	; 23
+	PORT_HFet	&=~((1<<AH_Fet)|(1<<BH_Fet)|(1<<CH_Fet));
+  d0:	88 b3       	in	r24, 0x18	; 24
+  d2:	81 7f       	andi	r24, 0xF1	; 241
+  d4:	88 bb       	out	0x18, r24	; 24
+
+	DDRC   = 0x00;
+  d6:	14 ba       	out	0x14, r1	; 20
+	PORTC  = 0x00;
+  d8:	15 ba       	out	0x15, r1	; 21
+
+	DDRD		 = (1<<AL_Fet)|(1<<BL_Fet)|(1<<CL_Fet);
+  da:	88 e3       	ldi	r24, 0x38	; 56
+  dc:	81 bb       	out	0x11, r24	; 17
+	PORT_LFet  	&=~((1<<AL_Fet)|(1<<BL_Fet)|(1<<CL_Fet));
+  de:	82 b3       	in	r24, 0x12	; 18
+  e0:	87 7c       	andi	r24, 0xC7	; 199
+  e2:	82 bb       	out	0x12, r24	; 18
+
+	ADCSRA &=~(1<<ADEN);
+  e4:	37 98       	cbi	0x06, 7	; 6
+	SFIOR  |= (1<<ACME);
+  e6:	80 b7       	in	r24, 0x30	; 48
+  e8:	88 60       	ori	r24, 0x08	; 8
+  ea:	80 bf       	out	0x30, r24	; 48
+//	TCCR1A |= (1<<COM1A1)|(1<<COM1B1)|(1<<WGM10);
+//	TCCR1B |= (1<<WGM12)|(1<<CS10);
+//	OCR1A  = a;
+//	OCR1B  = a;
+
+	TCCR2  = (1<<CS20);
+  ec:	81 e0       	ldi	r24, 0x01	; 1
+  ee:	85 bd       	out	0x25, r24	; 37
+	TIMSK	|= (1<<TOIE2);
+  f0:	89 b7       	in	r24, 0x39	; 57
+  f2:	80 64       	ori	r24, 0x40	; 64
+  f4:	89 bf       	out	0x39, r24	; 57
+		
+	PHASE_ALL_OFF;
+  f6:	c3 98       	cbi	0x18, 3	; 24
+  f8:	93 98       	cbi	0x12, 3	; 18
+  fa:	c2 98       	cbi	0x18, 2	; 24
+  fc:	94 98       	cbi	0x12, 4	; 18
+  fe:	c1 98       	cbi	0x18, 1	; 24
+ 100:	95 98       	cbi	0x12, 5	; 18
+	
+	duti = 500;
+ 102:	84 ef       	ldi	r24, 0xF4	; 244
+ 104:	91 e0       	ldi	r25, 0x01	; 1
+ 106:	90 93 67 00 	sts	0x0067, r25
+ 10a:	80 93 66 00 	sts	0x0066, r24
+
+	pwm_com = &pwm_on;
+ 10e:	86 e5       	ldi	r24, 0x56	; 86
+ 110:	90 e0       	ldi	r25, 0x00	; 0
+ 112:	90 93 69 00 	sts	0x0069, r25
+ 116:	80 93 68 00 	sts	0x0068, r24
+
+	sei();
+ 11a:	78 94       	sei
+	{
+
+		int a, b;
+		a++;
+		b++;
+		PORT_HFet ^= (1<<BH_Fet);
+ 11c:	94 e0       	ldi	r25, 0x04	; 4
+ 11e:	88 b3       	in	r24, 0x18	; 24
+ 120:	89 27       	eor	r24, r25
+ 122:	88 bb       	out	0x18, r24	; 24
+ 124:	fc cf       	rjmp	.-8      	; 0x11e <main+0x52>
+
+00000126 <_exit>:
+ 126:	f8 94       	cli
+
+00000128 <__stop_program>:
+ 128:	ff cf       	rjmp	.-2      	; 0x128 <__stop_program>

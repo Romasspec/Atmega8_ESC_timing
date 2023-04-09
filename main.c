@@ -3,28 +3,65 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
+void pwm_on (void);
+void pwm_off (void);
+
 volatile unsigned char a=20, st=0, b ;
+volatile uint16_t duti;
+
+void(*pwm_com)(void);
+
+// PWM channels
+#define AH_Fet	PB3
+#define BH_Fet	PB2
+#define CH_Fet	PB1
+#define PORT_HFet	PORTB
+
+#define AL_Fet	PD3
+#define BL_Fet	PD4
+#define CL_Fet	PD5
+#define PORT_LFet	PORTD
+
+#define AH_ON	PORT_HFet |= (1<<AH_Fet)
+#define AH_OFF	PORT_HFet &=~(1<<AH_Fet)
+
+#define BH_ON	PORT_HFet |= (1<<BH_Fet)
+#define BH_OFF	PORT_HFet &=~(1<<BH_Fet)
+
+#define CH_ON	PORT_HFet |= (1<<CH_Fet)
+#define CH_OFF	PORT_HFet &=~(1<<CH_Fet)
+
+
+#define AL_ON	PORT_LFet |= (1<<AL_Fet)
+#define AL_OFF	PORT_LFet &=~(1<<AL_Fet)
+
+#define BL_ON	PORT_LFet |= (1<<BL_Fet)
+#define BL_OFF	PORT_LFet &=~(1<<BL_Fet)
+
+#define CL_ON	PORT_LFet |= (1<<CL_Fet)
+#define CL_OFF	PORT_LFet &=~(1<<CL_Fet)
+
 volatile int  rotor=0;
 
-#define AH_ON   TCCR2  |= (1<<COM21);
-#define AH_OFF  TCCR2  &=~(1<<COM21);
+//#define AH_ON   TCCR2  |= (1<<COM21);
+//#define AH_OFF  TCCR2  &=~(1<<COM21);
 
-#define AL_ON   PORTD  |= (1<<PD3);
-#define AL_OFF  PORTD  &=~(1<<PD3);
-
-
-#define BH_ON   TCCR1A |= (1<<COM1B1);
-#define BH_OFF  TCCR1A &=~(1<<COM1B1);
-
-#define BL_ON   PORTD  |= (1<<PD4);
-#define BL_OFF  PORTD  &=~(1<<PD4);
+//#define AL_ON   PORTD  |= (1<<PD3);
+//#define AL_OFF  PORTD  &=~(1<<PD3);
 
 
-#define CH_ON	TCCR1A |= (1<<COM1A1);
-#define CH_OFF	TCCR1A &=~(1<<COM1A1);
+//#define BH_ON   TCCR1A |= (1<<COM1B1);
+//#define BH_OFF  TCCR1A &=~(1<<COM1B1);
 
-#define CL_ON	PORTD  |= (1<<PD5);
-#define CL_OFF	PORTD  &=~(1<<PD5);
+//#define BL_ON   PORTD  |= (1<<PD4);
+//#define BL_OFF  PORTD  &=~(1<<PD4);
+
+
+//#define CH_ON	TCCR1A |= (1<<COM1A1);
+//#define CH_OFF	TCCR1A &=~(1<<COM1A1);
+
+//#define CL_ON	PORTD  |= (1<<PD5);
+//#define CL_OFF	PORTD  &=~(1<<PD5);
 
 #define PHASE_ALL_OFF AH_OFF;AL_OFF;BH_OFF;BL_OFF;CH_OFF;CL_OFF;
 
@@ -36,7 +73,7 @@ volatile int  rotor=0;
 #define COMP_ON   SFIOR  |= (1<<ACME);
 #define COMP_OFF  SFIOR  &=~(1<<ACME);
 
-
+/*
 void comut(unsigned char start)
 
 {
@@ -151,76 +188,83 @@ ISR (ANA_COMP_vect)
 				
 	}
 	
+}*/
+
+ISR (TIMER2_OVF_vect)
+{
+//	static uint8_t tcnt2h;
+	
+//	if (tcnt2h > 0) {
+//		tcnt2h--;
+//	} else {
+//
+//	}
+
+//	PORT_HFet ^= (1<<AH_Fet);
+
+
+	(*pwm_com)();
+}
+
+void pwm_on (void)
+{
+	AH_OFF;
+	pwm_com = &pwm_off;
+}
+
+void pwm_off (void)
+{
+	AH_ON;
+	pwm_com = &pwm_on;
 }
 
 
 int main (void)
 
 {
-	DDRB   = 0x0E;
-	PORTB  = 0x31;
+	DDRB		 = (1<<AH_Fet)|(1<<BH_Fet)|(1<<CH_Fet);	
+	PORT_HFet	&=~((1<<AH_Fet)|(1<<BH_Fet)|(1<<CH_Fet));
 
 	DDRC   = 0x00;
 	PORTC  = 0x00;
 
-	DDRD   = 0x38;
-	PORTD  = 0x00;
+	DDRD		 = (1<<AL_Fet)|(1<<BL_Fet)|(1<<CL_Fet);
+	PORT_LFet  	&=~((1<<AL_Fet)|(1<<BL_Fet)|(1<<CL_Fet));
 
 	ADCSRA &=~(1<<ADEN);
 	SFIOR  |= (1<<ACME);
-	ACSR   |= (1<<ADIE);
+//	ACSR   |= (1<<ACIE);
 
 
-	TCCR0  |= (1<<CS02)|(1<<CS00);
-	TIMSK  |= (1<<TOIE0);		
+//	TCCR0  |= (1<<CS02)|(1<<CS00);
+//	TIMSK  |= (1<<TOIE0);		
 
-	TCCR1A |= (1<<COM1A1)|(1<<COM1B1)|(1<<WGM10);
-	TCCR1B |= (1<<WGM12)|(1<<CS10);
-	OCR1A  = a;
-	OCR1B  = a;
+//	TCCR1A |= (1<<COM1A1)|(1<<COM1B1)|(1<<WGM10);
+//	TCCR1B |= (1<<WGM12)|(1<<CS10);
+//	OCR1A  = a;
+//	OCR1B  = a;
 
-	TCCR2  |= (1<<WGM21)|(1<<WGM20)|(1<<COM21)|(1<<CS20);
-	OCR2   = a;
-	
+	TCCR2  = (1<<CS20);
+	TIMSK	|= (1<<TOIE2);
+		
 	PHASE_ALL_OFF;
+	
+	duti = 500;
 
+	pwm_com = &pwm_on;
 
 	sei();
+
 
 	while (1)
 
 	{
 
-	
-		
-
-		if ((PINB & 0x10)==0)
-		{
-			if(a!=254) a++;
-			_delay_ms(5);
-			
-		}
-
-		if ((PINB & 0x20)==0)
-		{
-			if(a!=10) a--;
-			_delay_ms(5);
-		
-		}
-		
-		if (rotor>100)
-		{
-			OCR1A  = a;
-			OCR1B  = a;
-			OCR2   = a;		
-		}
-		
+		int a, b;
+		a++;
+		b++;
+		PORT_HFet ^= (1<<BH_Fet);
 
 	}
-
-
-
-
-
 
 }
